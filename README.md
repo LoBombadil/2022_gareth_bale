@@ -2,9 +2,9 @@
 *Le projet finale  de module Robot Mobile 2022/2023.*
 ---
 
-# Les membres:
+## Les membres:
 1. [houchi branis](https://framagit.org/houchi192)
-2. [Granvisir-clerc Louis](https://framagit.org/lgvc)
+2. [Granvisir-clerc Louis](https://github.com/LoBombadil)
 
 
     
