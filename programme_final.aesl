@@ -1,0 +1,335 @@
+<!DOCTYPE aesl-source>
+<network>
+
+
+<!--list of global events-->
+<event size="1" name="angle"/>
+<event size="3" name="data"/>
+<event size="1" name="distance"/>
+
+
+<!--node Thymio sur br - 28-->
+<node nodeId="{2367d971-5bc7-4b06-8647-2977b8e9d578}" name="Thymio sur br - 28"><![CDATA[var switch
+var amorce  
+var cpt
+var cptangle
+var bit[4]=[0,0,0,0]
+var nombrecodelu
+var speed
+var angle
+var distance
+var bool
+var cptdistance
+timer.period[0]=100
+timer.period[1]=750/2
+onevent timer0
+if  switch==1 then#si switch =1 il va commencer l'exécution du programme
+if  nombrecodelu<2 then
+                          
+                            	
+                            
+												if prox.ground.delta[0]<200 then #si gauche voit du noir, alors il vire à droite
+													motor.left.target=50
+													motor.right.target=0
+											   elseif prox.ground.delta[0]>700 then #si gauche voit du blanc, alors il vire à gauche	
+													motor.left.target=0
+													motor.right.target=50
+												   else #sinon il va tout droit
+													motor.left.target=speed
+													motor.right.target=speed
+												end
+											
+								if  amorce==1 and nombrecodelu==1 then
+									amorce=0
+								end
+								if prox.ground.delta[1] <500 and amorce==0 then #dès que le détecteur droit détecte du noir alors 
+														amorce=1
+														bit[0]=1
+												
+								end
+
+elseif nombrecodelu > 1 then
+						       
+						         
+						          
+						        motor.left.target=0
+								 motor.right.target=0
+								 if bool==0  then# si on a jamais tourner avec l'angle lu
+								 	
+								 
+										if angle==0 then
+										
+							      					  motor.left.target=speed
+													  motor.right.target=speed
+												bool=1# pour dire on fini de tourner
+										elseif angle==45 then
+										
+										    if cptangle<10  then
+										       motor.left.target=speed
+								              motor.right.target=-speed
+										     else 
+														bool=1
+										     end
+										     
+										elseif angle==-45 then
+										cptangle=0
+										     if cptangle<10  then
+										       motor.left.target=-speed
+								              motor.right.target=speed
+								            else  
+										      bool=1
+										     end
+										     
+										elseif angle==90 then
+										
+										     if cptangle<21 then
+										       motor.left.target=speed
+								              motor.right.target=-speed
+								            else 
+										         bool=1
+										     end
+										     
+										elseif angle==90 then
+										
+										    if cptangle<21  then
+										       motor.left.target=-speed
+								              motor.right.target=speed
+										     else
+										         bool=1
+										     end
+										     
+										elseif angle==120 then
+										
+										     if cptangle<30  then
+										       motor.left.target=speed
+								              motor.right.target=-speed
+								            else   
+								                 bool=1  
+										     end
+										     
+										elseif angle==-120 then
+										
+										     if cptangle<30  then
+										       motor.left.target=speed
+								              motor.right.target=-speed
+										      else   
+								                 bool=1  
+										     end
+										     
+										end
+										
+										cptangle=cptangle+1#le compteur des angle incremente
+										end
+										if  bool==1 then#si on a déja tourner avec un angle donné
+											if distance==0 then
+											    motor.left.target=0
+								              motor.right.target=0
+											elseif distance==10 then	
+											
+											    if cptdistance<30 then#si on a parcourut une distance  inferieure 
+											    	motor.left.target=speed
+													motor.right.target=speed
+												else #si on a parcourut la distance donné le robot va s'arreter
+													  motor.left.target=0
+								                    motor.right.target=0
+											    end
+											 elseif distance==20 then	
+										         	
+											        if cptdistance<60 then
+											    	motor.left.target=speed
+													motor.right.target=speed
+											    	else 
+													  motor.left.target=0
+								                    motor.right.target=0
+											       end
+											  elseif distance==30 then	
+											   
+											     if cptdistance<9 then
+											    	motor.left.target=speed
+													motor.right.target=speed
+											    else 
+													  motor.left.target=0
+								                    motor.right.target=0
+											    end
+											   elseif distance==40 then	
+													 
+													      if cptdistance<12 then
+													    	motor.left.target=speed
+															motor.right.target=speed
+													    	else 
+																  motor.left.target=0
+											                    motor.right.target=0
+														    end
+												elseif distance==50 then	
+											    
+											    if cptdistance<150 then
+											    	motor.left.target=speed
+													motor.right.target=speed
+											    else 
+													  motor.left.target=0
+								                    motor.right.target=0
+											    end
+											  elseif distance==60 then	
+											  
+											    if cptdistance<180 then
+											    	motor.left.target=speed
+													motor.right.target=speed
+											    else 
+													  motor.left.target=0
+								                    motor.right.target=0
+											    end
+											  elseif distance==70 then	
+											  
+											    if cptdistance<210 then
+											    	motor.left.target=speed
+													motor.right.target=speed
+											    end   	    
+											end
+											emit angle[cptangle] 
+										end
+				      cptdistance=cptdistance+1
+end	
+end
+onevent timer1	
+
+if amorce==1 and nombrecodelu<2  then #si l'amorce=1 donc on est dans le premier code barre et on lit juste un codde
+
+						if  cpt==2 then#si le compteur =2 donc il est a la premiére case
+											if prox.ground.delta[1] <400 then #si la case est noir
+														  bit[1]=0
+											else #sinon elle est blanche
+														  bit[1]=1
+											end
+											call leds.top(0,0,0) 
+						elseif cpt==4 then#si le compteur =4 donc il est a la deuxiéme case
+										if prox.ground.delta[1] <400 then
+										  bit[2]=0
+										else
+										  bit[2]=1
+										end
+										call leds.top(0,0,0) 
+						elseif cpt==6	then	#si le compteur =6 donc il est a la troisiéme case		
+										if prox.ground.delta[1] <400  then
+										  bit[3]=0
+										else
+										  bit[3]=1
+										end
+										#fin du code barre
+										emit data[bit[1],bit[2],bit[3]]	
+										amorce=0
+									
+																 if nombrecodelu==0  then #si on jamais lu un code-barre on appelle la fonction de couleur et distance
+																 	callsub liredistancecouleur
+																 elseif  nombrecodelu==1 then # sinon on appelle la fonction d'angle
+																   callsub lireangle
+																 end
+										nombrecodelu=nombrecodelu+1#on inrémente le nombre de code barre lu
+										amorce=0	
+							end			
+							cpt=cpt+1	#on incremente
+						if cpt>6	then
+										cpt=0			
+										call leds.top(0,0,0) 	
+						end
+						
+
+
+end
+
+sub lireangle#on difinie l'angle en fonction du cde-barre
+        if bit[1]==0 then
+				if bit[2]==0 then
+					if bit[3]==0 then
+						
+						angle=0
+					else
+						angle=45
+						
+					end
+				else 
+					if bit[2]==0 then
+						
+						angle=-45
+					else
+						
+						angle=90
+					end
+				end
+			else 
+				if bit[2]==0 then
+					if bit[3]==0 then
+					
+						angle=-90
+					else
+						
+					    angle=120
+					end
+				else 
+					if bit[3]==0 then
+					
+						angle=-120
+					else
+					
+						angle=0
+					end
+				end
+				
+			end
+sub liredistancecouleur
+   			  if bit[1]==0 then
+				if bit[2]==0 then
+					if bit[3]==0 then
+						call leds.top(16,16,16) #si 000 alors blanc
+						distance=bit[1]*10+bit[2]*20+bit[3]*40#on calcule la distance
+					else
+						distance=bit[1]*10+bit[2]*20+bit[3]*40
+						call leds.top(32,0,0)#si 001 alors rouge
+					end
+				else 
+					if bit[2]==0 then
+						call leds.top(0,32,0)#si 010 alors vert
+					distance=bit[1]*10+bit[2]*20+bit[3]*40
+					else
+						call leds.top(32,32,0)#si 011 alors jaune
+						distance=bit[1]*10+bit[2]*20+bit[3]*40
+					end
+				end
+			else 
+				if bit[2]==0 then
+					if bit[3]==0 then
+						call leds.top(0,0,32)#si 100 alors bleu
+						distance=bit[1]*10+bit[2]*20+bit[3]*40
+					else
+						call leds.top(32,0,32)#si 101 alors magenta
+					    distance=bit[1]*10+bit[2]*20+bit[3]*40
+					end
+				else 
+					if bit[3]==0 then
+						call leds.top(0,32,32)#si 110 alors cyan
+						distance=bit[1]*10+bit[2]*20+bit[3]*40
+					else
+						call leds.top(0,32,16)#si 111 alors vert bleuté
+						distance=bit[1]*10+bit[2]*20+bit[3]*40
+					end
+				end
+				emit distance[distance]
+			end
+			
+sub initialiser			
+			switch=0
+			amorce=0  
+			cpt=0
+			cptangle=0
+			 
+			 nombrecodelu=0
+			 bool=0
+			 cptdistance=0
+			 
+onevent button.forward
+switch=1
+onevent button.backward
+callsub initialiser
+				]]></node>
+
+
+</network>

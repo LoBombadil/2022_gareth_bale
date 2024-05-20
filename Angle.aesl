@@ -1,0 +1,42 @@
+<!DOCTYPE aesl-source>
+<network>
+
+
+<!--list of global events-->
+<event name="temps" size="1"/>
+
+
+<!--node Thymio on Melkor - 78507-->
+<node nodeId="{804bd3e1-2257-4e64-8647-9fde54528dce}" name="Thymio on Melkor - 78507"><![CDATA[var angle=0
+var d=0
+var compteur
+timer.period[0]=100
+##45 or -45 = 45°
+##90 or -90 = 90°
+##120 or -120 = 120°
+
+onevent button.right
+    angle=-90
+    d=0
+
+onevent button.left
+    angle=90
+    d=0
+
+onevent timer0
+    if (angle!=0) then
+        d=d+1
+        emit temps compteur
+    end
+    if  (d>22) then
+        angle=0
+        emit temps compteur
+    end
+compteur = compteur+1
+    motor.left.target=-angle
+    motor.right.target=angle
+
+]]></node>
+
+
+</network>

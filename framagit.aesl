@@ -1,0 +1,111 @@
+<!DOCTYPE aesl-source>
+<network>
+
+
+<!--list of global events-->
+<event name="data" size="3"/>
+<event name="data1" size="1"/>
+<event name="data2" size="1"/>
+
+
+<!--node Thymio-II Wireless-->
+<node name="Thymio-II Wireless" nodeId="{f342b4eb-005b-4a0c-8a14-75dea2dc0c64}"><![CDATA[var switch=0
+var amorce=0  
+var cpt=0
+var bit[4]=[0,0,0,0]
+timer.period[0]=100
+timer.period[1]=750/2
+lecture_de_la_ligne = prox.ground.delta[0]
+lecture_du_code_barre = prox.ground.delta[1]
+onevent timer0
+
+if  switch==1 then
+	if lecture_de_la_ligne < 200 then #si gauche voit du noir, alors il vire à droite
+		motor.left.target=50
+		motor.right.target=0
+   elseif lecture_de_la_ligne>700 then #si gauche voit du blanc, alors il vire à gauche	
+		motor.left.target=0
+		motor.right.target=50
+	   else #sinon il va tout droit
+		motor.left.target=100
+		motor.right.target=100
+	end
+end
+if lecture_du_code_barre<500 and amorce==0 then #dès que le détecteur droit détecte du noir alors 
+		amorce=1
+		bit[0]=1
+ emit data1[bit[0]] 
+end
+onevent timer1	
+
+if amorce==1  then
+						if  cpt==2 then
+							if lecture_du_code_barre<400 then
+										  bit[1]=0
+							else
+										  bit[1]=1
+							end
+						elseif cpt==4 then
+										if lecture_du_code_barre<400 then
+										  bit[2]=0
+										else
+										  bit[2]=1
+										end
+						elseif cpt==6	then			
+										if lecture_du_code_barre<400  then
+										  bit[3]=0
+										else
+										  bit[3]=1
+										end
+										emit data[bit[1],bit[2],bit[3]]	
+										amorce=0
+										 emit data2[bit[0]] 
+										
+										callsub allumer
+										amorce=0	
+										
+						elseif cpt>6	then
+						cpt=0			
+						call leds.top(0,0,0) 	
+						end
+						cpt=cpt+1	
+end
+sub allumer
+        if bit[1]==0 then
+				if bit[2]==0 then
+					if bit[3]==0 then
+						call leds.top(16,16,16) #si 000 alors blanc
+					else
+						call leds.top(32,0,0)#si 001 alors rouge
+					end
+				else 
+					if bit[2]==0 then
+						call leds.top(0,32,0)#si 010 alors vert
+					else
+						call leds.top(32,32,0)#si 011 alors jaune
+					end
+				end
+			else 
+				if bit[2]==0 then
+					if bit[3]==0 then
+						call leds.top(0,0,32)#si 100 alors bleu
+					else
+						call leds.top(32,0,32)#si 101 alors magenta
+					end
+				else 
+					if bit[3]==0 then
+						call leds.top(0,32,32)#si 110 alors cyan
+					else
+						call leds.top(0,32,16)#si 111 alors vert bleuté
+					end
+				end
+			end
+			
+onevent button.forward
+switch=1
+onevent button.backward
+switch=0
+				]]></node>
+
+
+</network>
